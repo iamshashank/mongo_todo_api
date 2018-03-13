@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
+const _= require('lodash');
 
 //FOR heroku
 // 1. heroku create
@@ -79,7 +80,37 @@ app.delete('/todos/:id',(req,res)=>{
   }).catch((e)=>{
     res.status(400).send();
   });
-})
+});
+
+//update
+//mix od GET and post
+//req.body has addition info we send
+app.patch('/todos/:id',(req,res)=>{
+  id = req.params.id;
+  //from req.body  we pic 'text' and 'completed' property
+  var body = _.pick(req.body, ['text','completed']);
+  if(!ObjectID.isValid(id)){
+    return res.status(404).send();
+  }
+
+  if(_.isBoolean(body.completed) && body.completed){
+    body.completedAt= new Date().getTime();
+  }else{
+    body.completed=false;
+    body.completedAt=null;
+  }
+  //replace entire document body and return the new docemnet
+  Todo.findByIdAndUpdate(id,{$set:body},{new:true}).then((result)=>{
+
+    if(!result){
+      return res.status(404).send();
+    }
+    res.send({result});
+  }).catch((e)=>{
+    res.status(400).send(e);
+  });
+
+});
 
 
 app.listen(PORT,()=>{
