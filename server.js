@@ -2,6 +2,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
 
+//FOR heroku
+// 1. heroku create
+// 2. heroku addons:create mongolab:sandbox
+// 3. const MONGODB_URI = process.env.MONGODB_URI
+
+//MLAB APP for mongodb heroku
+
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
