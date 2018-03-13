@@ -6,6 +6,8 @@ const {ObjectID} = require('mongodb');
 // 1. heroku create
 // 2. heroku addons:create mongolab:sandbox
 // 3. const MONGODB_URI = process.env.MONGODB_URI
+// 4. git push heroku master
+// 5. heroku logs
 
 //MLAB APP for mongodb heroku
 
@@ -23,6 +25,7 @@ app.use(bodyParser.json());
 //  post /todos is for creating new
 // GET /todos to get all Todos
 //GET /todos/123 to get a specific todos
+//https://mysterious-ocean-90855.herokuapp.com/todos
 app.post('/todos',(req,res)=>{
   console.log('Received Data: ',req.body); //req.body is a json
   var newTodo = new Todo({text:req.body.text});
@@ -62,6 +65,21 @@ app.get('/todos/:id',(req,res)=>{
 
 });
 
+
+//delete
+app.delete('/todos/:id',(req,res)=>{
+  if(!ObjectID.isValid(req.params.id)){
+    return res.status(404).send();
+  }
+  Todo.findByIdAndRemove({_id:req.params.id}).then((todo)=>{
+    if(!todo){
+      return res.status(404).send({});
+    }
+    res.send(todo);
+  }).catch((e)=>{
+    res.status(400).send();
+  });
+})
 
 
 app.listen(PORT,()=>{
